@@ -29,7 +29,7 @@ class Che168Spider(CrawlSpider):
 
     def format_expire(self,text):
         str = text.strip()
-        if len(str) == 3:
+        if len(str) < 3:
             return '1970-01'
         else:
             dateStr = str[0:7]
