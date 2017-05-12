@@ -15,8 +15,8 @@ SPIDER_MODULES = ['che168.spiders']
 NEWSPIDER_MODULE = 'che168.spiders'
 
 #mongodb://{username}:{password}@{host}:{port}/{db_name}?authMechanism=MONGODB-CR
-MONGO_URL = 'mongodb://localhost:27017/the_database'
-MONGO_DATABASE = 'che168'
+MONGO_URL = 'mongodb://localhost:27017/'
+MONGO_DATABASE = 'che168_2'
 MONGO_TABLE = 'cars'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
