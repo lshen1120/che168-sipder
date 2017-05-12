@@ -10,8 +10,11 @@ import scrapy
 
 class CarItem(scrapy.Item):
     _id = scrapy.Field()
-    url = scrapy.Field()
-    name = scrapy.Field()
+    url = scrapy.Field()                        # 对应网址
+    name = scrapy.Field()                       # 名字
+    brand = scrapy.Field()                      # 品牌
+    car_model = scrapy.Field()                  # 车型
+    displacement = scrapy.Field()               # 排量 单位L
     price = scrapy.Field()                      # 报价
     new_price = scrapy.Field()                  # 新车价
     province = scrapy.Field()                   # 省

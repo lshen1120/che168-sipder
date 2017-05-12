@@ -8,6 +8,9 @@ from scrapy.contrib.spiders import CrawlSpider, Rule
 from ..items import *
 from scrapy.contrib.linkextractors import LinkExtractor
 import area
+import re
+
+detail_pattern = re.compile(r'.*?(?P<year>\d{4})')
 
 
 class Che168Spider(CrawlSpider):
@@ -27,9 +30,9 @@ class Che168Spider(CrawlSpider):
              ),
     )
 
-    def format_expire(self,text):
+    def format_expire(self, text):
         str = text.strip()
-        if len(str) < 3:
+        if len(str) <= 3:
             return '1970-01'
         else:
             dateStr = str[0:7]
@@ -37,6 +40,10 @@ class Che168Spider(CrawlSpider):
                 return dateStr[0:4] + '-0' + dateStr[-1]
             else:
                 return dateStr
+
+    def get_displacement(self, text):
+        index = text.find(u'\uff0f')
+        return text[index + 1: -1]
 
     def parse_detail(self, response):
         infoid = response.xpath('//input[@id="car_infoid"]/@value').extract_first()
@@ -53,10 +60,16 @@ class Che168Spider(CrawlSpider):
                 item['province'] = response.xpath('/html/body/div[5]/a[2]//text()').extract_first()
             item['price'] = response.xpath('//input[@id="car_price"]/@value').extract_first()
             item['name'] = response.xpath('//input[@id="car_carname"]/@value').extract_first()
+
+            name_detail_list = response.xpath('/html/body/div[5]/a//text()').extract()
+            item['brand'] = name_detail_list[-3][2:]
+            item['car_model'] = name_detail_list[-2][2:]
+
             # 行驶里程
             item['mileage'] = response.xpath('//input[@id="car_mileage"]/@value').extract_first()
             # 首次上牌
-            item['first_reg_time'] = response.xpath('//input[@id="car_firstregtime"]/@value').extract_first()
+            item['first_reg_time'] = response.xpath('//input[@id="car_firstregtime"]/@value').extract_first().replace(
+                '/', '-')
             item['annual_inspection_expire'] = self.format_expire(
                 response.xpath('//*[@id="anchor01"]/ul/li[1]//text()').extract()[1])
             item['insurance_expire'] = self.format_expire(
@@ -64,12 +77,21 @@ class Che168Spider(CrawlSpider):
             item['quality_expire'] = self.format_expire(
                 response.xpath('//*[@id="anchor01"]/ul/li[3]//text()').extract()[1])
             item['emission_standard'] = response.xpath('//*[@id="anchor01"]/ul/li[4]//text()').extract()[1]
-            item['transfer_count'] = response.xpath('//*[@id="anchor01"]/ul/li[5]//text()').extract()[1][0].replace("-","0")
+            item['transfer_count'] = response.xpath('//*[@id="anchor01"]/ul/li[5]//text()').extract()[1][0].replace("-",
+                                                                                                                    "0")
             if response.xpath('//*[@id="anchor01"]/ul/li[6]/span//text()').extract_first() == u"证件信息：":
                 item['usage'] = response.xpath('//*[@id="anchor01"]/ul/li[7]//text()').extract()[1]
             else:
                 item['usage'] = response.xpath('//*[@id="anchor01"]/ul/li[6]//text()').extract()[1]
-            item['engine'] = response.xpath('//*[@id="anchor02"]/ul/li[1]//text()').extract()[1]
+            item['engine'] = response.xpath('//*[@id="anchor02"]/ul/li[1]//text()').extract()[1].strip()
+
+            try:
+                item['displacement'] = self.get_displacement(
+                response.xpath('/html/body/div[6]/div[2]/div[3]/ul/li[3]/span//text()').extract()[0])
+            except:
+                item['displacement'] = self.get_displacement(
+                response.xpath('/html/body/div[6]/div[2]/div[4]/ul/li[3]/span//text()').extract()[0])
+
             item['transmission'] = response.xpath('//*[@id="anchor02"]/ul/li[2]//text()').extract()[1]
             item['drive_mode'] = response.xpath('//*[@id="anchor02"]/ul/li[3]//text()').extract()[1]
             item['color'] = response.xpath('//*[@id="anchor02"]/ul/li[4]//text()').extract()[1]
@@ -83,7 +105,7 @@ class Che168Spider(CrawlSpider):
             params['infoid'] = infoid
             params['sessionid'] = response.xpath('//input[@id="sessionId"]/@value').extract_first()
             params['cid'] = response.xpath('//input[@id="car_cid"]/@value').extract_first()
-            params['firstregtime'] = response.xpath('//input[@id="car_firstregtime"]/@value').extract_first().replace('/','-')
+            params['firstregtime'] = response.xpath('//input[@id="car_firstregtime"]/@value').extract_first()
             params['specid'] = response.xpath('//input[@id="car_specid"]/@value').extract_first()
             params['mileage'] = float(response.xpath('//input[@id="car_mileage"]/@value').extract_first()) * 10000
             url = "http://cacheapi.che168.com/assess/usedcar.ashx?uip={uip}" \
