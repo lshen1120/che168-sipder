@@ -64,7 +64,7 @@ class Che168Spider(CrawlSpider):
             if match:
                 item['year'] = match.group('year')
             else:
-                print response.url + ' not match year skip '
+                item['year'] = '-'
             name_detail_list = response.xpath('/html/body/div[5]/a//text()').extract()
             item['brand'] = name_detail_list[-3][2:]
             item['car_model'] = name_detail_list[-2][2:]
@@ -81,8 +81,7 @@ class Che168Spider(CrawlSpider):
             item['quality_expire'] = self.format_expire(
                 response.xpath('//*[@id="anchor01"]/ul/li[3]//text()').extract()[1])
             item['emission_standard'] = response.xpath('//*[@id="anchor01"]/ul/li[4]//text()').extract()[1]
-            item['transfer_count'] = response.xpath('//*[@id="anchor01"]/ul/li[5]//text()').extract()[1][0].replace("-",
-                                                                                                                    "0")
+            item['transfer_count'] = response.xpath('//*[@id="anchor01"]/ul/li[5]//text()').extract()[1][0].strip()
             if response.xpath('//*[@id="anchor01"]/ul/li[6]/span//text()').extract_first() == u"证件信息：":
                 item['usage'] = response.xpath('//*[@id="anchor01"]/ul/li[7]//text()').extract()[1]
             else:

@@ -13,7 +13,7 @@ class CarItem(scrapy.Item):
     url = scrapy.Field()                        # 对应网址
     name = scrapy.Field()                       # 名字
     brand = scrapy.Field()                      # 品牌
-    year = scrapy.Field()                       # 年限
+    year = scrapy.Field()                       # 年款 没有匹配的为 -
     car_model = scrapy.Field()                  # 车型
     displacement = scrapy.Field()               # 排量 单位L
     price = scrapy.Field()                      # 报价
@@ -29,7 +29,7 @@ class CarItem(scrapy.Item):
     annual_inspection_expire = scrapy.Field()   # 年检到期 已过期的值表示为1970-01-01
     insurance_expire = scrapy.Field()           # 保险到期 已过期的值表示为1970-01-01
     quality_expire = scrapy.Field()             # 质保到期 已过期的值表示为1970-01-01
-    transfer_count = scrapy.Field()             # 过户次数
+    transfer_count = scrapy.Field()             # 过户次数 未填的表示为-
     emission_standard = scrapy.Field()          # 排放标准
     usage = scrapy.Field()                      # 用途
     engine = scrapy.Field()                     # 发动机
