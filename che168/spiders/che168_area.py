@@ -60,7 +60,11 @@ class Che168Spider(CrawlSpider):
                 item['province'] = response.xpath('/html/body/div[5]/a[2]//text()').extract_first()
             item['price'] = response.xpath('//input[@id="car_price"]/@value').extract_first()
             item['name'] = response.xpath('//input[@id="car_carname"]/@value').extract_first()
-
+            match = detail_pattern.match(item['name'])
+            if match:
+                item['year'] = match.group('year')
+            else:
+                print response.url + ' not match year skip '
             name_detail_list = response.xpath('/html/body/div[5]/a//text()').extract()
             item['brand'] = name_detail_list[-3][2:]
             item['car_model'] = name_detail_list[-2][2:]
@@ -87,10 +91,10 @@ class Che168Spider(CrawlSpider):
 
             try:
                 item['displacement'] = self.get_displacement(
-                response.xpath('/html/body/div[6]/div[2]/div[3]/ul/li[3]/span//text()').extract()[0])
+                    response.xpath('/html/body/div[6]/div[2]/div[3]/ul/li[3]/span//text()').extract()[0])
             except:
                 item['displacement'] = self.get_displacement(
-                response.xpath('/html/body/div[6]/div[2]/div[4]/ul/li[3]/span//text()').extract()[0])
+                    response.xpath('/html/body/div[6]/div[2]/div[4]/ul/li[3]/span//text()').extract()[0])
 
             item['transmission'] = response.xpath('//*[@id="anchor02"]/ul/li[2]//text()').extract()[1]
             item['drive_mode'] = response.xpath('//*[@id="anchor02"]/ul/li[3]//text()').extract()[1]

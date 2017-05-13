@@ -13,6 +13,7 @@ class CarItem(scrapy.Item):
     url = scrapy.Field()                        # 对应网址
     name = scrapy.Field()                       # 名字
     brand = scrapy.Field()                      # 品牌
+    year = scrapy.Field()                       # 年限
     car_model = scrapy.Field()                  # 车型
     displacement = scrapy.Field()               # 排量 单位L
     price = scrapy.Field()                      # 报价
